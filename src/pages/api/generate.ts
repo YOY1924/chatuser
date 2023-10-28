@@ -72,7 +72,7 @@ export const post: APIRoute = async(context) => {
 
   messages.unshift({
     role: 'system',
-    content: '你是GPT-4,不是GPT3,请认真思考后回答',
+    content: '你是GPT-4,不是GPT-3,请认真思考后回答',
   })
   messages.unshift({
     role: 'system',
