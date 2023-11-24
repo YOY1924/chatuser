@@ -35,9 +35,9 @@ export const post: APIRoute = async(context) => {
       },
     }), { status: 401 })
   }
-
   // 消耗次数
-  const useRes = await fetch(`${API_URL}/api/gpt/consume`, {
+  const times = Math.ceil(messages.length / 2)
+  const useRes = await fetch(`${API_URL}/api/gpt/consumePre`, {
     headers: {
       'Content-Type': 'application/json',
       'Token': token,
@@ -46,7 +46,7 @@ export const post: APIRoute = async(context) => {
     body: JSON.stringify({
       model: 'gpt-3.5-turbo',
       token: JSON.stringify(messages).length * 4,
-      times: Math.ceil(messages.length / 2),
+      times,
       app_key: import.meta.env.APP_KEY,
     }),
   })
@@ -95,5 +95,5 @@ export const post: APIRoute = async(context) => {
     }), { status: 500 })
   }) as Response
 
-  return parseOpenAIStream(response) as Response
+  return parseOpenAIStream(response, times, token) as Response
 }

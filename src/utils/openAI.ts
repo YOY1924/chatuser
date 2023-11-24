@@ -14,11 +14,11 @@ export const generatePayload = (apiKey: string, messages: ChatMessage[]): Reques
     model,
     messages,
     temperature: 0.5,
-    stream: true
+    stream: true,
   }),
 })
 
-export const parseOpenAIStream = (rawResponse: Response) => {
+export const parseOpenAIStream = (rawResponse: Response, times: number, token: string) => {
   const encoder = new TextEncoder()
   const decoder = new TextDecoder()
   if (!rawResponse.ok) {
@@ -35,6 +35,18 @@ export const parseOpenAIStream = (rawResponse: Response) => {
           const data = event.data
           if (data === '[DONE]') {
             controller.close()
+            fetch(`${import.meta.env.API_URL}/api/gpt/consume`, {
+              headers: {
+                'Content-Type': 'application/json',
+                'Token': token,
+              },
+              method: 'POST',
+              body: JSON.stringify({
+                model: 'gpt-3.5-turbo',
+                app_key: import.meta.env.APP_KEY,
+                times,
+              }),
+            })
             return
           }
           try {

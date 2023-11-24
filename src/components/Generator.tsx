@@ -157,7 +157,6 @@ export default () => {
       }
 
       const timestamp = Date.now()
-
       const response = await fetch('/api/generate', {
         method: 'POST',
         body: JSON.stringify({
@@ -172,7 +171,6 @@ export default () => {
         }),
         signal: controller.signal,
       })
-
       if (!response.ok) {
         const error = await response.json()
         console.error(error.error)
@@ -208,16 +206,20 @@ export default () => {
       return
     }
     archiveCurrentMessage()
-    if (setting().continuousDialogue) {
-      let dec_times = Math.ceil(messageList().length / 2)
-      if (dec_times > 5)
-        dec_times = 5
-
-      user().times = user().times - dec_times
-    } else {
-      user().times = user().times - 1
+    const response = await fetch('/api/info', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        token: localStorage.getItem('token'),
+      }),
+    })
+    const responseJson = await response.json()
+    if (responseJson.code === 200) {
+      localStorage.setItem('user', JSON.stringify(responseJson.data))
+      setUser(responseJson.data)
     }
-    setUser({ ...user() })
   }
 
   const archiveCurrentMessage = () => {
