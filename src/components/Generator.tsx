@@ -188,7 +188,7 @@ export default () => {
       while (!done) {
         const { value, done: readerDone } = await reader.read()
         if (value) {
-          const char = decoder.decode(value)
+          const char = decoder.decode(value, { stream: true })
           if (char === '\n' && currentAssistantMessage().endsWith('\n'))
             continue
 
